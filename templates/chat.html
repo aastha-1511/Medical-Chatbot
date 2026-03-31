@@ -1,81 +1,349 @@
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
 <!DOCTYPE html>
-<html>
-	<head>
-		<title>Chatbot</title>
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}"/>
-	</head>
-	
-	
-	<body>
-		<div class="container-fluid h-100">
-			<div class="row justify-content-center h-100">		
-				<div class="col-md-8 col-xl-6 chat">
-					<div class="card">
-						<div class="card-header msg_head">
-							<div class="d-flex bd-highlight">
-								<div class="img_cont">
-									<img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img">
-									<!-- <img src="https://www.prdistribution.com/spirit/uploads/pressreleases/2019/newsreleases/d83341deb75c4c4f6b113f27b1e42cd8-chatbot-florence-already-helps-thousands-of-patients-to-remember-their-medication.png" class="rounded-circle user_img"> -->
-									<span class="online_icon"></span>
-								</div>
-								<div class="user_info">
-									<span>Medical Chatbot</span>
-									<p>Ask me anything!</p>
-								</div>
-							</div>
-						</div>
-						<div id="messageFormeight" class="card-body msg_card_body">
-							
-							
-						</div>
-						<div class="card-footer">
-							<form id="messageArea" class="input-group">
-                                <input type="text" id="text" name="msg" placeholder="Type your message..." autocomplete="off" class="form-control type_msg" required/>
-								<div class="input-group-append">
-									<button type="submit" id="send" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<script>
-			$(document).ready(function() {
-				$("#messageArea").on("submit", function(event) {
-					const date = new Date();
-					const hour = date.getHours();
-					const minute = date.getMinutes();
-					const str_time = hour+":"+minute;
-					var rawText = $("#text").val();
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediBot – Your Medical Assistant</title>
+    <meta name="description" content="MediBot: AI-powered medical question answering. Get concise, reliable answers to your health questions 24/7.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="chat-body">
 
-					var userHtml = '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' + rawText + '<span class="msg_time_send">'+ str_time + '</span></div><div class="img_cont_msg"><img src="https://i.ibb.co/d5b84Xw/Untitled-design.png" class="rounded-circle user_img_msg"></div></div>';
-					
-					$("#text").val("");
-					$("#messageFormeight").append(userHtml);
+<!-- Side Panel -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+            </div>
+            <span>MediBot</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebar-toggle-btn" title="Close sidebar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+        </button>
+    </div>
 
-					$.ajax({
-						data: {
-							msg: rawText,	
-						},
-						type: "POST",
-						url: "/get",
-					}).done(function(data) {
-						var botHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data + '<span class="msg_time">' + str_time + '</span></div></div>';
-						$("#messageFormeight").append($.parseHTML(botHtml));
-					});
-					event.preventDefault();
-				});
-			});
-		</script>
-        
-    </body>
+    <button class="btn-new-chat" id="new-chat-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New chat
+    </button>
+
+    <div class="conversations-list" id="conversations-list">
+        <!-- Populated by JS -->
+    </div>
+
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar">{{ username[0].upper() }}</div>
+            <span class="user-name">{{ username }}</span>
+        </div>
+        <a href="/logout" class="btn-logout" title="Logout">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+        </a>
+    </div>
+</aside>
+
+<!--  Sidebar Overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- Main Chat Area  -->
+<main class="chat-main" id="chat-main">
+
+    <!-- Top bar -->
+    <header class="chat-header">
+        <button class="btn-icon" id="open-sidebar-btn" title="Toggle sidebar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+        </button>
+        <span class="chat-title" id="chat-title">New Chat</span>
+        <div style="width:36px;"></div>
+    </header>
+
+    <!-- Messages -->
+    <div class="messages-area" id="messages-area">
+        <!-- Welcome state shown when no conversation is active -->
+        <div class="welcome-state" id="welcome-state">
+            <div class="welcome-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+            </div>
+            <h2>How can I help you today?</h2>
+            <p>I'm MediBot — ask me anything about medical symptoms, conditions, medications, or general health.</p>
+            <div class="suggestion-chips">
+                <button class="chip" onclick="sendSuggestion(this)">What are symptoms of diabetes?</button>
+                <button class="chip" onclick="sendSuggestion(this)">How does hypertension develop?</button>
+                <button class="chip" onclick="sendSuggestion(this)">What is ibuprofen used for?</button>
+                <button class="chip" onclick="sendSuggestion(this)">Explain what a CBC blood test shows</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input bar -->
+    <div class="input-area">
+        <form class="input-form" id="message-form">
+            <div class="input-wrapper">
+                <textarea
+                    id="message-input"
+                    name="msg"
+                    placeholder="Ask MediBot a medical question..."
+                    rows="1"
+                    autocomplete="off"
+                ></textarea>
+                <button type="submit" class="btn-send" id="send-btn" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+        <p class="input-disclaimer">MediBot may make mistakes. Always consult a doctor for medical advice.</p>
+    </div>
+</main>
+
+<script>
+// State
+let activeConversationId = null;
+let isWaiting = false;
+
+// DOM refs
+const sidebar         = document.getElementById('sidebar');
+const overlay         = document.getElementById('sidebar-overlay');
+const messagesArea    = document.getElementById('messages-area');
+const welcomeState    = document.getElementById('welcome-state');
+const messageForm     = document.getElementById('message-form');
+const messageInput    = document.getElementById('message-input');
+const sendBtn         = document.getElementById('send-btn');
+const chatTitle       = document.getElementById('chat-title');
+const convList        = document.getElementById('conversations-list');
+const openSidebarBtn  = document.getElementById('open-sidebar-btn');
+const sidebarToggle   = document.getElementById('sidebar-toggle-btn');
+
+// Sidebar toggle
+function toggleSidebar() {
+    if (window.innerWidth >= 768) {
+        // Desktop: collapse/expand by width
+        sidebar.classList.toggle('collapsed');
+    } else {
+        // Mobile: slide in/out as overlay
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+    }
+}
+openSidebarBtn.addEventListener('click', toggleSidebar);
+sidebarToggle.addEventListener('click', toggleSidebar);
+overlay.addEventListener('click', toggleSidebar);
+
+// Textarea auto-resize + send button enable
+messageInput.addEventListener('input', () => {
+    messageInput.style.height = 'auto';
+    messageInput.style.height = Math.min(messageInput.scrollHeight, 160) + 'px';
+    sendBtn.disabled = messageInput.value.trim() === '' || isWaiting;
+});
+
+messageInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!sendBtn.disabled) messageForm.dispatchEvent(new Event('submit'));
+    }
+});
+
+// Send suggestion chip
+function sendSuggestion(btn) {
+    messageInput.value = btn.textContent;
+    sendBtn.disabled = false;
+    messageForm.dispatchEvent(new Event('submit'));
+}
+
+// Render a message bubble
+function appendMessage(role, text) {
+    welcomeState.style.display = 'none';
+    const div = document.createElement('div');
+    div.className = `message ${role}`;
+    div.innerHTML = `
+        <div class="message-avatar">${role === 'user' ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>'}</div>
+        <div class="message-bubble"><p>${escapeHtml(text)}</p></div>
+    `;
+    messagesArea.appendChild(div);
+    messagesArea.scrollTop = messagesArea.scrollHeight;
+    return div;
+}
+
+function showTypingIndicator() {
+    welcomeState.style.display = 'none';
+    const div = document.createElement('div');
+    div.className = 'message bot typing-row';
+    div.id = 'typing-indicator';
+    div.innerHTML = `
+        <div class="message-avatar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <div class="message-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>
+    `;
+    messagesArea.appendChild(div);
+    messagesArea.scrollTop = messagesArea.scrollHeight;
+}
+
+function removeTypingIndicator() {
+    const el = document.getElementById('typing-indicator');
+    if (el) el.remove();
+}
+
+function escapeHtml(text) {
+    return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+// Submit message
+messageForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = messageInput.value.trim();
+    if (!text || isWaiting) return;
+
+    isWaiting = true;
+    sendBtn.disabled = true;
+    messageInput.value = '';
+    messageInput.style.height = 'auto';
+
+    appendMessage('user', text);
+    showTypingIndicator();
+
+    const formData = new FormData();
+    formData.append('msg', text);
+    if (activeConversationId) formData.append('conversation_id', activeConversationId);
+
+    try {
+        const res = await fetch('/get', { method: 'POST', body: formData });
+        const data = await res.json();
+        removeTypingIndicator();
+        appendMessage('bot', data.answer);
+        if (data.conversation_id && !activeConversationId) {
+            activeConversationId = data.conversation_id;
+        }
+        loadConversations();
+        updateActiveInSidebar();
+    } catch (err) {
+        removeTypingIndicator();
+        appendMessage('bot', 'Sorry, something went wrong. Please try again.');
+    } finally {
+        isWaiting = false;
+        sendBtn.disabled = messageInput.value.trim() === '';
+        messageInput.focus();
+    }
+});
+
+// New Chat
+document.getElementById('new-chat-btn').addEventListener('click', startNewChat);
+
+function startNewChat() {
+    activeConversationId = null;
+    messagesArea.innerHTML = '';
+    messagesArea.appendChild(welcomeState);
+    welcomeState.style.display = 'flex';
+    chatTitle.textContent = 'New Chat';
+    messageInput.value = '';
+    sendBtn.disabled = true;
+    updateActiveInSidebar();
+    // On mobile, close sidebar after selecting
+    if (window.innerWidth < 768) toggleSidebar();
+}
+
+// Load conversation list
+async function loadConversations() {
+    const res = await fetch('/conversations');
+    const convs = await res.json();
+    renderConversationList(convs);
+}
+
+function renderConversationList(convs) {
+    convList.innerHTML = '';
+    if (convs.length === 0) {
+        convList.innerHTML = '<p class="empty-history">No conversations yet.<br>Start chatting!</p>';
+        return;
+    }
+
+    const groups = { Today: [], Yesterday: [], Older: [] };
+    const now = new Date();
+    convs.forEach(c => {
+        const d = new Date(c.created_at);
+        const diff = Math.floor((now - d) / 86400000);
+        if (diff === 0) groups.Today.push(c);
+        else if (diff === 1) groups.Yesterday.push(c);
+        else groups.Older.push(c);
+    });
+
+    Object.entries(groups).forEach(([label, items]) => {
+        if (!items.length) return;
+        const header = document.createElement('p');
+        header.className = 'conv-group-label';
+        header.textContent = label;
+        convList.appendChild(header);
+        items.forEach(c => {
+            const item = document.createElement('div');
+            item.className = 'conv-item';
+            item.dataset.id = c._id;
+            item.innerHTML = `
+                <span class="conv-item-title">${escapeHtml(c.title)}</span>
+                <button class="conv-delete-btn" title="Delete" onclick="deleteConversation(event,'${c._id}')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>
+                    </svg>
+                </button>
+            `;
+            item.addEventListener('click', () => loadConversationMessages(c._id, c.title));
+            convList.appendChild(item);
+        });
+    });
+    updateActiveInSidebar();
+}
+
+// Load a specific conversation
+async function loadConversationMessages(id, title) {
+    activeConversationId = id;
+    chatTitle.textContent = title;
+    messagesArea.innerHTML = '';
+    messagesArea.appendChild(welcomeState);
+    welcomeState.style.display = 'none';
+
+    const res = await fetch(`/conversation/${id}`);
+    const data = await res.json();
+    (data.messages || []).forEach(msg => {
+        appendMessage('user', msg.user);
+        appendMessage('bot', msg.bot);
+    });
+    updateActiveInSidebar();
+    if (window.innerWidth < 768 && sidebar.classList.contains('open')) toggleSidebar();
+}
+
+// Delete conversation
+async function deleteConversation(e, id) {
+    e.stopPropagation();
+    await fetch(`/conversation/${id}`, { method: 'DELETE' });
+    if (activeConversationId === id) startNewChat();
+    loadConversations();
+}
+
+// Highlight active conv in sidebar
+function updateActiveInSidebar() {
+    document.querySelectorAll('.conv-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.id === activeConversationId);
+    });
+}
+
+// Init
+loadConversations();
+messageInput.focus();
+</script>
+</body>
 </html>

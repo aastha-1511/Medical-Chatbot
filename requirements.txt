@@ -9,3 +9,7 @@ sentence-transformers==4.1.0
 pypdf==5.6.1
 python-dotenv==1.1.0
 pydantic==2.7.4
+flask-login==0.6.3
+flask-bcrypt==1.0.1
+pymongo[srv]==4.7.2
+dnspython==2.6.1
